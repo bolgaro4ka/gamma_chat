@@ -1,0 +1,16 @@
+version: '3'
+
+
+services:
+  gammadb:
+    image: postgres
+    container_name: gammadb-postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: bolgaro4ka
+      POSTGRES_PASSWORD: bolgarin
+      POSTGRES_DATABASE: gammadb
+      POSTGRES_HOST: localhost
+    command: postgres
