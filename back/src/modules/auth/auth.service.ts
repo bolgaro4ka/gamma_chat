@@ -39,6 +39,8 @@ export class AuthService {
 
         const payload = {
             email: dto.email,
+            id : user.id,
+            username: user.username
         }
 
         const token = await this.tokenService.genJWTToken(payload);

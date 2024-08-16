@@ -4,9 +4,12 @@ import { ref, type Ref } from 'vue'
 import { getMe } from '@/common/jwt'
 import axios from 'axios'
 import { socket } from '@/socket';
+import { useRoute } from 'vue-router';
 
 
 const msgInput : Ref<HTMLElement | null> = ref(null)
+
+const route = useRoute()
 
 
 
@@ -26,7 +29,8 @@ const  handleSendMessage = async ()=> {
   sendMessage({
     text: (msgInput.value as HTMLInputElement).value.trim(),
     createdAt: new Date(),
-    userId: me.id
+    userId: me.id,
+    chatId: route.params.id
   });
 
   (msgInput.value as HTMLInputElement).value = ''

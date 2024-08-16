@@ -3,19 +3,31 @@ import SendForm from '@/components/SendForm.vue'
 import Message from '@/components/Message.vue'
 import axios from 'axios'
 import io from 'socket.io-client'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { getMe } from '@/common/jwt'
 import { scrollToBottomOfChat } from '@/common/app'
+import { useRoute } from 'vue-router'
+
 
 const socket = io('http://127.0.0.1:3000')
+
+const route = useRoute()
 
 const msgInput = ref(null)
 const messages: any = ref([])
 const me: any = await getMe()
 
+watch(
+    () => route.params.id,
+    (newID, oldID) => {
+        getMessages()
+    }
+)
+
 const getMessages = async () => {
+    messages.value = []
     try {
-        const { data } = await axios.get('http://127.0.0.1:3000/api/chat', {
+        const { data } = await axios.get('http://127.0.0.1:3000/api/chat/' + route.params.id, {
         })
         console.log(data)
         data.forEach(item => {
@@ -32,6 +44,7 @@ getMessages()
 
 
 socket.on('recMessage', (msgu) => {
+    if (msgu.chatId != route.params.id) return
     messages.value.push(msgu);
     console.log('btm')
     scrollToBottomOfChat()

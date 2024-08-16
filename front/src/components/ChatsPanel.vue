@@ -5,6 +5,11 @@ import { computed, onMounted, reactive, ref, type Reactive } from "vue";
 import { reloadPage } from "@/common/app";
 import { useRouter } from "vue-router";
 import { state } from "@/socket";
+import ChatsBtns from "./ChatsBtns.vue";
+import Modal from "./Modal.vue";
+import CreateChat from "./CreateChat.vue";
+
+const isPopupOpen = ref(false);
 
 const user : Reactive<{ "id": number, "email": string, "username": string }> = reactive({"id": 0, "email": '', "username": ''});
 
@@ -69,6 +74,25 @@ function disconnect() {
                         </div>
                     </div>
                 </div>
+                
+                <h3>Список чатов</h3>
+                <div class="chatsPanel__chats">
+                    <Suspense>
+                        <ChatsBtns></ChatsBtns>
+
+                        <template #fallback>
+                            Loading...
+                        </template>
+                    </Suspense>
+                </div>
+                <div class="chatsPanel__createChat" @click="isPopupOpen = true">
+                    Создать чат
+                </div>
+                <Teleport to="body">
+                    <Modal v-if="isPopupOpen" @close="isPopupOpen = false" title="Создание чата">
+                        <CreateChat @close="isPopupOpen = false"/>
+                    </Modal>
+                </Teleport>
             </div>
         </div>
     </div>
@@ -99,6 +123,11 @@ function disconnect() {
     }
 }
 
+.chatsPanel__wrapper,
+.chatsPanel__content {
+    height: 100%;
+}
+
 .chatsPanel__indicator {
     width: 10px;
     height: 10px;
@@ -118,6 +147,33 @@ function disconnect() {
     border: none;
     color: var(--vt-c-white);
     cursor: pointer;
+}
+
+h3 {
+    align-items: center;
+    text-align: center;
+    font-size: 20px;
+}
+
+.chatsPanel__chats {
+    height: calc(100% - 200px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+.chatsPanel__createChat {
+    width: 100%;
+    height: 40px;
+    background-color: #287a9b;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    bottom: 0;
+    left: 0;
 }
 
 
