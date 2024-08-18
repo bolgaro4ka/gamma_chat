@@ -6,8 +6,11 @@ import { reloadPage } from "@/common/app";
 import { useRouter } from "vue-router";
 import { state } from "@/socket";
 import ChatsBtns from "./ChatsBtns.vue";
-import Modal from "./Modal.vue";
+
 import CreateChat from "./CreateChat.vue";
+import NoChatAvailable from "./NoChatAvailable.vue";
+import Loader from "./Loader.vue";
+import Modal from "./Modal.vue";
 
 const isPopupOpen = ref(false);
 
@@ -51,6 +54,11 @@ function disconnect() {
     socket.disconnect();
 }
 
+if (localStorage.getItem('needReload') === 'true') {
+    localStorage.removeItem('needReload');
+    reloadPage(router);
+}
+
 </script>
 
 <template>
@@ -76,21 +84,29 @@ function disconnect() {
                 </div>
                 
                 <h3>Список чатов</h3>
-                <div class="chatsPanel__chats">
+                <div class="chatsPanel__chats" v-if="user.id">
                     <Suspense>
                         <ChatsBtns></ChatsBtns>
 
                         <template #fallback>
-                            Loading...
+                            <Loader/>
                         </template>
                     </Suspense>
                 </div>
-                <div class="chatsPanel__createChat" @click="isPopupOpen = true">
+                <div class="chatsPanel__chats" v-else>
+                    <NoChatAvailable reason="Вы не авторизированы"></NoChatAvailable>
+                </div>
+                <div class="chatsPanel__createChat" @click="isPopupOpen = true" v-if="user.id">
                     Создать чат
                 </div>
                 <Teleport to="body">
                     <Modal v-if="isPopupOpen" @close="isPopupOpen = false" title="Создание чата">
-                        <CreateChat @close="isPopupOpen = false"/>
+                        <Suspense>
+                            <CreateChat @close="isPopupOpen = false"/>
+                            <template #fallback>
+                                <Loader/>
+                            </template>
+                        </Suspense>
                     </Modal>
                 </Teleport>
             </div>

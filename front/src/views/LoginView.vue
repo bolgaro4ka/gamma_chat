@@ -12,6 +12,8 @@ const error = ref('')
 
 const router = useRouter()
 
+const emit = defineEmits(['login'])
+
 
 function login(e : Event) {
     e.preventDefault();
@@ -21,6 +23,7 @@ function login(e : Event) {
     }).then((response) => {
         console.log(response);  
         localStorage.setItem('token', 'Bearer ' + response.data.token);
+        emit('login')
         redirect(router, '/');
         return response.data
 

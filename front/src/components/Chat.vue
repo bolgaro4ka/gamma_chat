@@ -30,7 +30,7 @@ const getMessages = async () => {
         const { data } = await axios.get('http://127.0.0.1:3000/api/chat/' + route.params.id, {
         })
         console.log(data)
-        data.forEach(item => {
+        data.forEach((item : any) => {
             messages.value.push(item)
         });
     } catch (error) {

@@ -42,7 +42,7 @@ export class UsersService {
     }
 
     public async getAllUsers () {
-        return this.prismaService.user.findMany({ take: 25 })
+        return this.prismaService.user.findMany({ select: {...USER_SELECT_FIELDS}})
     }
 
     public async getPublicUser(email:string) {

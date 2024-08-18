@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Chat from '@/components/Chat.vue'
+import Loader from '@/components/Loader.vue';
 
 
 </script>
@@ -8,7 +9,7 @@ import Chat from '@/components/Chat.vue'
   <Suspense >
     <Chat/>
     <template #fallback>
-      Loading...
+      <Loader/>
     </template>
   </Suspense>
 </div>

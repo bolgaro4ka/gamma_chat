@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res, UseGuards, Param } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res, UseGuards, Param, Delete } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Message } from '@prisma/client';
 import { JwtGuard } from 'src/guards/jwt.guard';
@@ -19,6 +19,13 @@ export class AppController {
   async getMessages(@Res() res, @Param('id') chatId: string) {
     const messages = await this.appService.getMessages(parseInt(chatId));
     res.json( messages );
+  }
+
+  @UseGuards(JwtGuard)
+  @Delete('/api/chat/:id')
+  async deleteChat(@Res() res, @Param('id') chatId: string) {
+    const chat = await this.appService.deleteChat(parseInt(chatId));
+    res.json( chat );
   }
 
   @UseGuards(JwtGuard)

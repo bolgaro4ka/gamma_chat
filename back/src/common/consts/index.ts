@@ -4,6 +4,8 @@ export const SELECT_FIELDS = {
     id: true,
     email: true,
     username: true,
+    first_name: true,
+    last_name: true
 }
 
 export const USER_SELECT_FIELDS = {

@@ -13,7 +13,7 @@ const route = useRoute()
 
 
 
-const sendMessage = (msg) => {
+const sendMessage = (msg : any) => {
   socket.emit('sendMessage', msg)
   
 }

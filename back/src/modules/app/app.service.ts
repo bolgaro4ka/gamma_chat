@@ -94,5 +94,13 @@ export class AppService {
   getHello(): string {
     return 'Hello World!';
   }
+
+  async deleteChat(chatId: number) {
+    return await this.prisma.chat.delete({
+      where: {
+        id: chatId
+      }
+    })
+  }
 }
  
