@@ -39,6 +39,13 @@ export class AppController {
   }
 
   @UseGuards(JwtGuard)
+  @Get('/api/chat/:id/info')
+  async getChat(@Res() res, @Param('id') chatId: string) {
+    const chat = await this.appService.getChat(parseInt(chatId));
+    res.json( chat );
+  }
+
+  @UseGuards(JwtGuard)
   @Post('/api/send/message')
   async sendMessage(@Res() res, @Req() req, @Body() dto : {text: string, createdAt?: Date | string, userId: string, chatId: string}) {
     const msg = await this.appService.createMessage(dto);
@@ -57,7 +64,7 @@ export class AppController {
       throw new Error('userId не найден в req.user');
     }
 
-    const chat = await this.appService.createChat({ name: dto.name, userIds: dto.users }, userId);
+    const chat = await this.appService.createChat({ name: dto.name, userIds: dto.users });
     // const newChat = await createChat({ name: 'New Chat', userIds: [{ id: 2 }, { id: 3 }] }, 1);
 
     res.json( chat );

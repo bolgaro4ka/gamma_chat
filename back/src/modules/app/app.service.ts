@@ -39,6 +39,18 @@ export class AppService {
     })
   }
 
+  async getChat(chatId) {
+    return await this.prisma.chat.findUnique({
+      where: {
+        id: chatId
+      },
+      include: {
+        messages: true,
+        users: true
+      }
+    })
+  }
+
   async getUserChats(userId: number) {
     const userWithChats = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -71,8 +83,9 @@ export class AppService {
     }
   }
 
-  async createChat(data: Prisma.ChatCreateInput & { userIds: { id: number }[] }, userId: number) {
-    const usersToConnect = [{ id: userId }, ...data.userIds];
+  async createChat(data: Prisma.ChatCreateInput & { userIds: { id: number }[] }) {
+    console.log(data);
+    const usersToConnect = [...data.userIds];
 
     usersToConnect.forEach(user => {
       if (typeof user.id !== 'number' || isNaN(user.id)) {
@@ -88,19 +101,114 @@ export class AppService {
         },
       },
     });
-  
-    return chat;
+
+    const chatId = chat.id;
+
+    const GChat = await this.prisma.chat.findUnique({
+      where: {
+        id: chatId
+      },
+      include: {
+        users: {
+          select: {
+            id: true
+          }
+        }
+      }
+      
+    }) 
+
+    const result = {
+      id: GChat.id,
+      name: GChat.name,
+      userIds: GChat.users.map((user) => user.id),
+      // Добавьте другие необходимые поля, если нужно
+    };
+
+    return result;
   }
   getHello(): string {
     return 'Hello World!';
   }
 
   async deleteChat(chatId: number) {
-    return await this.prisma.chat.delete({
+    // Check if the chat exists
+    const chatExists = await this.prisma.chat.findUnique({
+      where: { id: chatId },
+    });
+  
+    if (!chatExists) {
+      console.error(`Chat with id ${chatId} does not exist.`);
+      throw new Error(`Chat with id ${chatId} does not exist.`);
+    }
+  
+    console.log(`Chat with id ${chatId} exists. Proceeding to delete messages.`);
+  
+    // First, delete all messages associated with the chat
+    const deletedMessages = await this.prisma.message.deleteMany({
       where: {
-        id: chatId
-      }
-    })
+        chatId: chatId,
+      },
+    });
+  
+    console.log(`Deleted ${deletedMessages.count} messages associated with the chat.`);
+  
+    // Then, delete the chat
+    const deletedChat = await this.prisma.chat.delete({
+      where: {
+        id: chatId,
+      },
+    });
+  
+    console.log(`Deleted chat with id ${chatId}.`);
+  
+    return deletedChat;
   }
+
+  async updateChat(data: { 'name': string, 'chatId': number, 'userIds': { id: number }[] }) {
+    const oldChat = await this.prisma.chat.findUnique({
+        where: {
+            id: data.chatId
+        },
+        include: {
+            messages: true,
+            users: true
+        }
+    });
+
+    const newUserIds = data.userIds.map(userId => userId.id);
+    const oldUserIds = oldChat.users.map(user => user.id);
+
+    const usersToConnect = newUserIds.filter(id => !oldUserIds.includes(id)).map(id => ({ id }));
+    const usersToDisconnect = oldUserIds.filter(id => !newUserIds.includes(id)).map(id => ({ id }));
+
+    const chat = await this.prisma.chat.update({
+        where: {
+            id: data.chatId
+        },
+        include: {
+            messages: true,
+            users: true
+        },
+        data: {
+            name: data.name,
+            users: {
+                connect: usersToConnect,
+                disconnect: usersToDisconnect
+            },
+            messages: {
+                connect: oldChat.messages.map(message => ({
+                    id: message.id
+                }))
+            }
+        }
+    });
+
+    return {
+        id: chat.id,
+        name: chat.name,
+        userIds: chat.users.map(user => user.id),
+    };
+}
 }
  

@@ -8,7 +8,7 @@ import { Req, UseGuards } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://127.0.0.1:5173'],
+    origin: ['http://localhost:5000', 'http://192.168.0.228:5000'],
   }})
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly appService: AppService) {}
@@ -17,6 +17,23 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   async handleSendMessage(client: any, payload: {text: string, createdAt?: Date | string, userId: string, chatId: string}): Promise<void> {
     const msg = await this.appService.createMessage(payload);
     this.server.emit('recMessage', {text: payload.text, createdAt: payload.createdAt, userId: payload.userId, username: msg.username, chatId: payload.chatId});
+  }
+  @SubscribeMessage('createChat')
+  async handleCreateChat(client: any, payload: Prisma.ChatCreateInput & { name: string, userIds: { id: number }[] }) {
+    const chat = await this.appService.createChat(payload);
+    this.server.emit('recChat', chat);
+  }
+
+  @SubscribeMessage('deleteChat')
+  async handleDeleteChat(client: any, payload: number) {
+    const chat = await this.appService.deleteChat(payload);
+    this.server.emit('delChat', chat);
+  }
+
+  @SubscribeMessage('updateChat')
+  async handleUpdateChat(client: any, payload: {'name': string, 'chatId': number, 'userIds': { id: number }[]}) {
+    const chat = await this.appService.updateChat(payload);
+    this.server.emit('updChat', chat);
   }
 
   afterInit(server: any) {

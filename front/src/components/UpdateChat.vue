@@ -2,7 +2,7 @@
 import { reloadPage } from '@/common/app';
 import { getMe } from '@/common/jwt';
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { socket } from '@/socket';
 
@@ -11,21 +11,39 @@ const users = await axios.get('/users/all');
 const router = useRouter();
 
 const emits = defineEmits(['close']);
+const props = defineProps(['chatID'])
 
-const strings : any = []
 
 
-for (let user of users.data) {
-    strings.push([`@${ user.username } (${ user.id }) - ${ user.first_name} ${ user.last_name }`, user.id])
+const not_selected = ref([])
+const finds = ref(not_selected.value)
+
+const selected = ref<string[]>([])
+const selectedIds : Ref<number[]> = ref([])
+
+const chat = await axios.get('/api/chat/' + props.chatID + '/info')
+
+const chatName = ref(chat.data.name)
+
+for (let user of chat.data.users) {
+    selected.value.push([`@${ user.username } (${ user.id }) - ${ user.first_name} ${ user.last_name }`, user.id])
+    selectedIds.value.push(user.id)
 }
 
-const finds = ref(strings)
-const selected = ref<string[]>([])
+for (let user of users.data) {
+    if (!selectedIds.value.includes(user.id)) {
+        not_selected.value.push([`@${ user.username } (${ user.id }) - ${ user.first_name} ${ user.last_name }`, user.id])
+    }
+    
+}
+
+
+
 
 function handleFind (e : Event) {
     const value = (e.target as HTMLInputElement).value
-    finds.value = []
-    for (let string of strings) {
+    not_selected.value = []
+    for (let string of not_selected.value) {
         if (string[0].toLowerCase().includes(value.toLowerCase()) && !selected.value.includes(string as never)) {
             finds.value.push(string as never)
         }
@@ -40,8 +58,11 @@ function handleCreate (e : Event) {
         userIds.push({id: user[1]})
     }
 
-    socket.emit('createChat', {
+    console.log(userIds, props.chatID)
+
+    socket.emit('updateChat', {
         name: (document.getElementById('name') as HTMLInputElement).value,
+        chatId: parseInt(props.chatID),
         // description: (document.getElementById('description') as HTMLInputElement).value,
         userIds: userIds
     })
@@ -62,7 +83,7 @@ function handleCreate (e : Event) {
 <template>
     <div class="createChat" >
         <form>
-            <input type="text" placeholder="Name" id="name" ref="nameInput" >
+            <input type="text" placeholder="Name" id="name" ref="nameInput" v-model="chatName">
             <input type="text" placeholder="Description" id="description" ref="descriptionInput">
             <div>
                 <input type="text" placeholder="Найти среди невыбранных..." id="type" @input="handleFind">

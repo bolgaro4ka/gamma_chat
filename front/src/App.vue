@@ -4,6 +4,10 @@ import { isAuthOrRedirectToLogin, reloadPage, redirect } from './common/app';
 import ChatsPanel from './components/ChatsPanel.vue';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from 'axios';
+import { watch } from 'vue';
+import Loader from './components/Loader.vue';
 
 const router = useRouter()
 
@@ -18,9 +22,18 @@ const handleLogin = () => {
   redirect(router, '/');
 }
 
+const handleUpdateThePanel = () => {
+  key.value += 1
+}
+
 const handleGlobalClick = (e : Event) => {
   e.currentTarget?.dispatchEvent(new Event('closeContextsMenu', {bubbles: true, cancelable: true, composed: true}));
 }
+
+document.addEventListener('updateThePanel', handleUpdateThePanel);
+
+
+
 
 
 
@@ -31,7 +44,12 @@ isAuthOrRedirectToLogin(router);
 <template>
   <main @click="handleGlobalClick">
     <ChatsPanel :key="key"/>
-    <div class="content" ><RouterView @login="handleLogin " /></div>
+    <Suspense>
+      <div class="content" ><RouterView @login="handleLogin " class="content" /></div>
+      <template #fallback>
+        <Loader/>
+      </template>
+    </Suspense>
   </main>
   
 </template>
