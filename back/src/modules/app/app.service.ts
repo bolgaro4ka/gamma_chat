@@ -73,6 +73,7 @@ export class AppService {
         id: chat.id,
         name: chat.name,
         userIds: chat.users.map(user => user.id),
+        avatar: chat.avatar,
         // Включите другие необходимые поля чата, исключая поле users
         // например, createdAt и updatedAt
       }));
@@ -96,6 +97,7 @@ export class AppService {
     const chat = await this.prisma.chat.create({
       data: {
         name: data.name,
+        avatar: data.avatar,
         users: {
           connect: usersToConnect,
         },
@@ -122,6 +124,7 @@ export class AppService {
       id: GChat.id,
       name: GChat.name,
       userIds: GChat.users.map((user) => user.id),
+      avatar: GChat.avatar
       // Добавьте другие необходимые поля, если нужно
     };
 
@@ -165,10 +168,10 @@ export class AppService {
     return deletedChat;
   }
 
-  async updateChat(data: { 'name': string, 'chatId': number, 'userIds': { id: number }[] }) {
+  async updateChat(data: { 'name': string, 'chatId': number, 'userIds': { id: number }[], avatar?: string }) {
     const oldChat = await this.prisma.chat.findUnique({
         where: {
-            id: data.chatId
+            id: Number(data.chatId)
         },
         include: {
             messages: true,
@@ -192,6 +195,7 @@ export class AppService {
         },
         data: {
             name: data.name,
+            avatar: data.avatar,
             users: {
                 connect: usersToConnect,
                 disconnect: usersToDisconnect
@@ -208,6 +212,7 @@ export class AppService {
         id: chat.id,
         name: chat.name,
         userIds: chat.users.map(user => user.id),
+        avatar: chat.avatar,
     };
 }
 }

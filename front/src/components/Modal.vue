@@ -34,7 +34,6 @@
   };
 
   function handleClose (e : MouseEvent) {
-    e.preventDefault();
     if (e.target === e.currentTarget) emits('close')
   }
   

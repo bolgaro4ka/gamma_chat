@@ -2,14 +2,13 @@
 import SendForm from '@/components/SendForm.vue'
 import Message from '@/components/Message.vue'
 import axios from 'axios'
-import io from 'socket.io-client'
-import { ref, watch } from 'vue'
+import { onUpdated, ref, watch, type Ref } from 'vue'
 import { getMe } from '@/common/jwt'
 import { scrollToBottomOfChat } from '@/common/app'
 import { useRoute } from 'vue-router'
+import { socket } from '@/socket';
+import { notifyMe } from '@/common/notifications';
 
-
-const socket = io('http://127.0.0.1:3000')
 
 const route = useRoute()
 
@@ -17,10 +16,13 @@ const msgInput = ref(null)
 const messages: any = ref([])
 const me: any = await getMe()
 
+const chatElem : Ref<null> | Ref<HTMLElement> = ref(null)
+
 watch(
     () => route.params.id,
     (newID, oldID) => {
         getMessages()
+        
     }
 )
 
@@ -40,13 +42,16 @@ const getMessages = async () => {
 }
 
 getMessages()
+onUpdated(() => {
+    scrollToBottomOfChat()
+})
 
 
 
 socket.on('recMessage', (msgu) => {
     if (msgu.chatId != route.params.id) return
     messages.value.push(msgu);
-    console.log('btm')
+    notifyMe(msgu.username+': '+msgu.text)
     scrollToBottomOfChat()
 
 })
@@ -59,7 +64,7 @@ socket.on('recMessage', (msgu) => {
 
 <template>
     <div class="chat__container">
-        <div class="chat">
+        <div class="chat" ref="chatElem">
             <div class="messages">
                 <Message v-for="message in messages" :key="message.id"
                     :class="message.username == me.username ? 'message-right' : 'message-left'">

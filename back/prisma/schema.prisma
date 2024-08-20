@@ -20,6 +20,7 @@ model User {
   last_name  String
   email     String    @unique
   password  String
+  avatar String?
   messages  Message[]
   chats     Chat[]    @relation("UserChats")
 }
@@ -38,6 +39,7 @@ model Message {
 model Chat {
   id        Int      @default(autoincrement()) @id
   name      String
+  avatar String?
   users     User[]   @relation("UserChats")
   messages  Message[]
 }

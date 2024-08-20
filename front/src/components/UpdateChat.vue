@@ -14,6 +14,7 @@ const emits = defineEmits(['close']);
 const props = defineProps(['chatID'])
 
 
+const avatarFile = ref<File | null>(null);
 
 const not_selected = ref([])
 const finds = ref(not_selected.value)
@@ -50,7 +51,8 @@ function handleFind (e : Event) {
     }
 };
 
-function handleCreate (e : Event) {
+
+async function handleCreate (e : Event) {
     console.log(selected.value)
     e.preventDefault();
     const userIds : any = []
@@ -58,21 +60,37 @@ function handleCreate (e : Event) {
         userIds.push({id: user[1]})
     }
 
-    console.log(userIds, props.chatID)
+    let avatarBase64 = null;
+
+    if (avatarFile.value) {
+        avatarBase64 = await fileToBase64(avatarFile.value);
+    }
 
     socket.emit('updateChat', {
         name: (document.getElementById('name') as HTMLInputElement).value,
+        userIds: userIds,
         chatId: parseInt(props.chatID),
-        // description: (document.getElementById('description') as HTMLInputElement).value,
-        userIds: userIds
-    })
+        avatar: avatarBase64
+    });
 
     emits('close');
-
 }
 
+function handleLoadFile (e : Event) {
+    const input = e.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        avatarFile.value = input.files[0];
+    }
+}
 
-
+function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = error => reject(error);
+    });
+}
 
 
 
@@ -85,6 +103,7 @@ function handleCreate (e : Event) {
         <form>
             <input type="text" placeholder="Name" id="name" ref="nameInput" v-model="chatName">
             <input type="text" placeholder="Description" id="description" ref="descriptionInput">
+            <input type="file" @change="handleLoadFile" accept="image/*"/>
             <div>
                 <input type="text" placeholder="Найти среди невыбранных..." id="type" @input="handleFind">
             

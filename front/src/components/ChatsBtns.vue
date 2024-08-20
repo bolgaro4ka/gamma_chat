@@ -15,6 +15,7 @@ import { useRoute } from 'vue-router';
 
 
 const me = await getMe();
+const host = ref(axios.defaults.baseURL)
 
 const chats_axios = await axios.get('/api/my/chats')
 const chats : any = ref(chats_axios.data)
@@ -50,7 +51,7 @@ function handleDestroyChat(e : MouseEvent) {
     e.preventDefault();
     const chatID = currentChatID.value;
     isContextMenuOpen.value = false
-    socket.emit('deleteChat', parseInt(chatID))
+    socket.emit('deleteChat', Number(chatID))
 }
 
 document.getElementsByTagName('main')[0].addEventListener('closeContextsMenu', () => {
@@ -59,6 +60,7 @@ document.getElementsByTagName('main')[0].addEventListener('closeContextsMenu', (
 
 socket.on('recChat', (data) => {
     if (data.userIds.includes(me.id))
+    console.log(data)
     chats.value.push(data)
 })
 
@@ -99,15 +101,19 @@ function handleUpdateChat(e : MouseEvent) {
 
 }
 
+
 </script>
 
 <template>
     <div v-if="chats">
         <RouterLink v-for="chat in chats" :key="chat.id" :to="`/chat/${chat.id}`" >
             <div class="chatsBtn" @contextmenu="handleContextMenu" :chatId="chat.id">
-                <div class="chatsBtn__avatar">
-
-                </div>
+                <template v-if="chat.avatar">
+                    <img :src="host+chat.avatar?.replace('.', '')" alt="avatar">
+                </template>
+                <template v-else>
+                    <div class="chatsBtn__avatar"></div>
+                </template> 
                 <p>{{ chat.name }}</p>
             </div>
         
@@ -189,6 +195,14 @@ function handleUpdateChat(e : MouseEvent) {
         &__item:hover {
             background-color: #2e73a3;
         }
+    }
+
+    .chatsBtn img {
+        width: 40px;
+        height: 40px;
+        background-color: #e8eaed;
+        border-radius: 50%;
+        margin-right: 10px;
     }
 
 </style>

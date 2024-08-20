@@ -8,9 +8,14 @@ import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { ConfigModule } from '@nestjs/config';
 import config from 'src/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
-  imports: [TokenModule, AuthModule, UsersModule, ConfigModule.forRoot({ isGlobal: true, load: [config] }), ],
+  imports: [TokenModule, AuthModule, UsersModule, ConfigModule.forRoot({ isGlobal: true, load: [config] }), ServeStaticModule.forRoot({
+    rootPath: join(__dirname, '..','..','..','uploads'),
+    serveRoot: '/uploads',
+  }),],
   controllers: [AppController],
   providers: [AppService, PrismaService, AppGateway],
 })
