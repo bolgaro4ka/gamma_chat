@@ -203,6 +203,7 @@ function handleUpdateChat(e : MouseEvent) {
         background-color: #e8eaed;
         border-radius: 50%;
         margin-right: 10px;
+        object-fit: cover;
     }
 
 </style>
