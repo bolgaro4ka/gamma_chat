@@ -6,6 +6,8 @@ import { reloadPage } from "@/common/app";
 import { useRouter } from "vue-router";
 import { state } from "@/socket";
 import ChatsBtns from "./ChatsBtns.vue";
+import UserEdit from "./UserEdit.vue";
+import axios from "axios";
 
 import CreateChat from "./CreateChat.vue";
 import NoChatAvailable from "./NoChatAvailable.vue";
@@ -13,6 +15,13 @@ import Loader from "./Loader.vue";
 import Modal from "./Modal.vue";
 
 const isPopupOpen = ref(false);
+const isUserEditOpen = ref(false);
+
+
+const ame = await getMe();
+
+const me = ref(ame);
+const host = ref(axios.defaults.baseURL)
 
 const user : Reactive<{ "id": number, "email": string, "username": string }> = reactive({"id": 0, "email": '', "username": ''});
 
@@ -66,12 +75,16 @@ if (localStorage.getItem('needReload') === 'true') {
         <div class="chatsPanel__wrapper">
             <div class="chatsPanel__content">
                 <div class="chatsPanel__userContent">
+                    <div class="chatsPanel__avatar"><img :src="me?.avatar ? host+me?.avatar?.replace('.', '') : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'"/></div>
                     <div class="chatsPanel__userInfo">
                         <div class="chatsPanel__user"><p>{{ user.username ? user.username : 'Не авторизирован' }}</p></div>
                         <div class="chatsPanel__email"><p>{{ user.email ? user.email : '' }}</p></div>
                         <div class="chatsPanel__id"><p>{{ user.id ? user.id : '' }}</p></div>
                     </div>
-                    <button @click="() => {logout(); reloadPage($router);}" class="chatsPanel__logout"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg></button>
+                    <div class="chatsPanel__btns">
+                        <button class="chatsPanel__edit" @click="isUserEditOpen = true"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>
+                        <button @click="() => {logout(); reloadPage($router);}" class="chatsPanel__logout"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg></button>
+                    </div>
                 </div>
                 <div class="chatsPanel__indicatorContent">
                     <div class="chatsPanel__status">
@@ -109,6 +122,16 @@ if (localStorage.getItem('needReload') === 'true') {
                         </Suspense>
                     </Modal>
                 </Teleport>
+                <Teleport to="body">
+                    <Modal v-if="isUserEditOpen" @close="isUserEditOpen = false" title="Редактирования пользователя">
+                        <Suspense>
+                            <UserEdit @close="isUserEditOpen = false"/>
+                            <template #fallback>
+                                <Loader/>
+                            </template>
+                        </Suspense>
+                    </Modal>
+                </Teleport>
             </div>
         </div>
     </div>
@@ -132,6 +155,7 @@ if (localStorage.getItem('needReload') === 'true') {
     &__userContent {
         display: flex;
         justify-content: space-between;
+        align-items: center;
     }
 
     p {
@@ -158,7 +182,7 @@ if (localStorage.getItem('needReload') === 'true') {
     background-color: green;
 }
 
-.chatsPanel__logout, .chatsPanel__connect, .chatsPanel__disconnect {
+.chatsPanel__logout, .chatsPanel__connect, .chatsPanel__disconnect, .chatsPanel__edit {
     background-color: transparent;
     border: none;
     color: var(--vt-c-white);
@@ -190,6 +214,31 @@ h3 {
     position: relative;
     bottom: 0;
     left: 0;
+}
+
+.chatsPanel__btns {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatsPanel__avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 2000px;
+    margin-right: 10px;
+
+    object-fit: cover;
+}
+
+.chatsPanel__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 50px;
+    height: 50px;
 }
 
 

@@ -107,7 +107,7 @@ function handleUpdateChat(e : MouseEvent) {
 <template>
     <div v-if="chats">
         <RouterLink v-for="chat in chats" :key="chat.id" :to="`/chat/${chat.id}`" >
-            <div class="chatsBtn" @contextmenu="handleContextMenu" :chatId="chat.id">
+            <div class="chatsBtn" @contextmenu="handleContextMenu" :chatId="chat.id" :class="chat.id == route.params.id ? 'chatsBtn__active' : ''">
                 <template v-if="chat.avatar">
                     <img :src="host+chat.avatar?.replace('.', '')" alt="avatar">
                 </template>
@@ -170,6 +170,10 @@ function handleUpdateChat(e : MouseEvent) {
     }
 
     .chatsBtn:hover {
+        background-color: #2e73a3;
+    }
+
+    .chatsBtn__active {
         background-color: #2e73a3;
     }
 

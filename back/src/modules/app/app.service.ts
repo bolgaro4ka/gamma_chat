@@ -7,12 +7,14 @@ import { UsersService } from '../users/users.service';
 export class AppService {
   constructor(private readonly prisma: PrismaService
   ) {}
-  async createMessage(data: {text: string, createdAt?: Date | string, userId: string, chatId: string}) : Promise<Message> {
+  async createMessage(data: {text: string, createdAt?: Date | string, userId: string, chatId: string}) : Promise<Message & {authorAvatar: string}> {
     const authorId = parseInt(data.userId);
     const chatId = parseInt(data.chatId);
     const user = await this.prisma.user.findUnique({where: {id: authorId}})
+
+    console.log('Msg from: ', user.username);
     
-    return await this.prisma.message.create({
+    const message = await this.prisma.message.create({
       data: {
         text: data.text,
         chat: {
@@ -22,12 +24,48 @@ export class AppService {
         },
         createdAt: data.createdAt,
         username: user.username,
-
         author: {
           connect: {
             id: authorId
           }
         }
+      }
+    });
+  
+    // Дополнительный запрос для получения аватара автора
+    const author = await this.prisma.user.findUnique({
+      where: {
+        id: authorId
+      },
+      select: {
+        avatar: true
+      }
+    });
+  
+    return {
+      ...message,
+      authorAvatar: author.avatar
+    };
+  }
+
+  async updateUser(data: { 'username': string, 'userId': number, 'avatar'?: string, 'first_name': string, 'last_name': string }) : Promise<any> {
+    const oldUser = await this.prisma.user.findUnique({
+      where: {
+        id: data.userId
+      }
+    })
+    
+    
+    
+    return await this.prisma.user.update({
+      where: {
+        id: data.userId
+      },
+      data: {
+        username: data.username,
+        avatar: data?.avatar || oldUser.avatar,
+        first_name: data.first_name,
+        last_name: data.last_name
       }
     })
   }
@@ -35,6 +73,13 @@ export class AppService {
     return await this.prisma.message.findMany({
       where: {
         chatId
+      },
+      include: {
+        author: {
+          select: {
+            avatar: true
+          }
+        }
       }
     })
   }
@@ -113,7 +158,8 @@ export class AppService {
       include: {
         users: {
           select: {
-            id: true
+            id: true,
+            avatar: true
           }
         }
       }

@@ -18,6 +18,8 @@ const me: any = await getMe()
 
 const chatElem : Ref<null> | Ref<HTMLElement> = ref(null)
 
+const host = ref(axios.defaults.baseURL)
+
 watch(
     () => route.params.id,
     (newID, oldID) => {
@@ -51,6 +53,7 @@ onUpdated(() => {
 socket.on('recMessage', (msgu) => {
     if (msgu.chatId != route.params.id) return
     messages.value.push(msgu);
+    console.log(msgu)
     notifyMe(msgu.username+': '+msgu.text)
     scrollToBottomOfChat()
 
@@ -66,7 +69,7 @@ socket.on('recMessage', (msgu) => {
     <div class="chat__container">
         <div class="chat" ref="chatElem">
             <div class="messages">
-                <Message v-for="message in messages" :key="message.id"
+                <Message v-for="message in messages" :key="message.id" :src="message.authorAvatar?.replace('.', '') ? host+message.authorAvatar?.replace('.', '') : host+message.author?.avatar?.replace('.', '')" :pos="message.username == me.username ? 'right' : 'left'"
                     :class="message.username == me.username ? 'message-right' : 'message-left'">
                     <template #username>
                         {{ message.username }}

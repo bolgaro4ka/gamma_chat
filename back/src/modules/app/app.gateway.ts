@@ -18,7 +18,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   @SubscribeMessage('sendMessage')
   async handleSendMessage(client: any, payload: {text: string, createdAt?: Date | string, userId: string, chatId: string}): Promise<void> {
     const msg = await this.appService.createMessage(payload);
-    this.server.emit('recMessage', {text: payload.text, createdAt: payload.createdAt, userId: payload.userId, username: msg.username, chatId: payload.chatId});
+    this.server.emit('recMessage', {text: payload.text, createdAt: payload.createdAt, userId: payload.userId, username: msg.username, chatId: payload.chatId, authorAvatar: msg.authorAvatar});
   }
   @SubscribeMessage('createChat')
   async handleCreateChat(client: any, payload: Prisma.ChatCreateInput & { name: string, userIds: { id: number }[], avatar?: string }) {
@@ -57,6 +57,16 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     const chat = await this.appService.updateChat(payload);
     this.server.emit('updChat', chat);
+  }
+
+  @SubscribeMessage('updateUser')
+  async handleUpdateUser(client: any, payload: { 'username': string, 'userId': number, 'avatar'?: string, 'first_name': string, 'last_name': string }) {
+    if (payload.avatar) {
+      const avatarPath = this.saveAvatar(payload.avatar, payload.username);
+      payload.avatar = avatarPath; // Сохранить путь к аватарке в payload
+    }
+    const user = await this.appService.updateUser(payload);
+    this.server.emit('updUser', user);
   }
 
   afterInit(server: any) {
