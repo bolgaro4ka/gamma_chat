@@ -15,7 +15,7 @@ const route = useRoute()
 const msgInput = ref(null)
 const messages: any = ref([])
 const me: any = await getMe()
-const chatEl = ref(null)
+const chatEl : Ref<null> | Ref<HTMLElement> = ref(null)
 
 const chatElem : Ref<null> | Ref<HTMLElement> = ref(null)
 
@@ -79,7 +79,16 @@ socket.on('updImgChat', (msgu) => {
     console.log(msgu)
     console.error('CHANGE')
     if (msgu.id != route.params.id) return
-    (chatEl.value as HTMLElement).style.backgroundImage = `url(${host.value+msgu.background_image?.replace('.', '')})`
+    if (!chatEl.value) return
+    chatEl.value.style.backgroundImage = `url(${host.value+msgu.background_image?.replace('.', '')})`
+})
+
+socket.on('recMessageWithFile', (msgu) => {
+    console.log(msgu, 'recMessageWithFile')
+    if (msgu.chatId != route.params.id) return
+    messages.value.push(msgu);
+    notifyMe(msgu.username+': '+msgu.text)
+    scrollToBottomOfChat()
 })
 
 
@@ -92,7 +101,14 @@ socket.on('updImgChat', (msgu) => {
     <div class="chat__container" ref="chatEl">
         <div class="chat" ref="chatElem">
             <div class="messages">
-                <Message v-for="message in messages" :key="message.id" :src="message.authorAvatar?.replace('.', '') ? host+message.authorAvatar?.replace('.', '') : host+message.author?.avatar?.replace('.', '')" :pos="message.username == me.username ? 'right' : 'left'" :userId="message.author?.id ? message.author?.id : message.userId " :class="message.username == me.username ? 'message-right' : 'message-left'">
+                <Message 
+                    v-for="message in messages" :key="message.id" 
+                    :src="message.authorAvatar?.replace('.', '') ? host+message.authorAvatar?.replace('.', '') : host+message.author?.avatar?.replace('.', '')" 
+                    :pos="message.username == me.username ? 'right' : 'left'" 
+                    :userId="message.author?.id ? message.author?.id : message.userId " 
+                    :class="message.username == me.username ? 'message-right' : 'message-left'"
+                    :file="message?.file ? host+message.file.replace('.', '') : ''"
+                >
                     <template #username>
                         {{ message.username }}
                     </template>

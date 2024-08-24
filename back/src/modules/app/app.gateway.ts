@@ -7,6 +7,7 @@ import { JwtGuard } from 'src/guards/jwt.guard';
 import { Req, UseGuards } from '@nestjs/common';
 import { writeFileSync } from 'fs'; // Импортируем writeFileSync
 import { join } from 'path'; // Импортируем join для создания пути
+import { Extensions } from '@prisma/client/runtime/library';
 
 @WebSocketGateway({
   cors: {
@@ -97,12 +98,47 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     }
   }
 
+
+
   private saveImg(fileChunks: Buffer[], chatName: string): string {
     const buffer = Buffer.concat(fileChunks);
     const date = new Date().getTime();
     const filePath = `./uploads/${chatName}_${date}.png`; // Пример пути сохранения
     writeFileSync(filePath, buffer);
     return filePath;
+  }
+
+  private saveFile(fileChunks: Buffer[], chatName: string, ext: string): string {
+    const buffer = Buffer.concat(fileChunks);
+    const date = new Date().getTime();
+    const filePath = `./uploads/${chatName}_${date}.${ext}`; // Пример пути сохранения
+    writeFileSync(filePath, buffer);
+    return filePath;
+  }
+
+  @SubscribeMessage('sendMesssageWithFile')
+  async handleSendMesssageWithFile(client: any,payload: Prisma.MessageCreateInput & { chatId: string; file: string; name: string; chunkIndex?: number; totalChunks?: number, text: string, createdAt?: Date | string, userId: string, extension: string }) {
+    const { file, name, chunkIndex, totalChunks, chatId, text, createdAt, userId, extension } = payload;
+
+    if (file && chunkIndex !== undefined && totalChunks !== undefined) {
+      const fileKey = `${name}_${chatId}`;
+      if (!this.fileChunks.has(fileKey)) {
+        this.fileChunks.set(fileKey, []);
+      }
+
+      const chunkBuffer = Buffer.from(file.split(',')[1], 'base64');
+      this.fileChunks.get(fileKey).push(chunkBuffer);
+
+      if (chunkIndex === totalChunks - 1) {
+        console.log(file.slice(0, 100));
+        const avatarPath = this.saveFile(this.fileChunks.get(fileKey), name, extension);
+        payload.file = avatarPath; // Сохранить путь к аватарке в payload
+        this.fileChunks.delete(fileKey);
+
+        const chat = await this.appService.createMessageWithFile(payload);
+        this.server.emit('recMessageWithFile', chat);
+      }
+    }
   }
 
   afterInit(server: any) {

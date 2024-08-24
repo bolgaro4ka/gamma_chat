@@ -50,6 +50,55 @@ export class AppService {
     };
   }
 
+  async createMessageWithFile(data: {text: string, createdAt?: Date | string, userId: string, chatId: string, file: string}) : Promise<Message & {authorAvatar: string, file: string}> {
+    console.log(data, 'saving...');
+    const authorId = parseInt(data.userId);
+    const chatId = parseInt(data.chatId);
+    const user = await this.prisma.user.findUnique({where: {id: authorId}})
+
+    console.log('Msg from: ', user.username);
+    
+    const message = await this.prisma.message.create({
+      data: {
+        text: data.text,
+        chat: {
+          connect: {
+            id: chatId
+          }
+        },
+        createdAt: data.createdAt,
+        username: user.username,
+        file: data.file,
+        author: {
+          connect: {
+            id: authorId
+          }
+        }
+      }
+    });
+
+    console.log(message, 'saved');
+  
+    // Дополнительный запрос для получения аватара автора
+    const author = await this.prisma.user.findUnique({
+      where: {
+        id: authorId
+      },
+      select: {
+        avatar: true,
+        id: true
+      }
+    });
+  
+    return {
+      ...message,
+      file: data.file,
+      authorAvatar: author.avatar,
+      authorId: author.id
+    };
+  }
+  
+
   async updateBackgroundImgChat(data: Prisma.ChatCreateInput & { chatId: number, image: string, name: string }) {
     return await this.prisma.chat.update({
       where: {
