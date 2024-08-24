@@ -14,19 +14,19 @@ datasource db {
 }
 
 model User {
-  id        Int       @default(autoincrement()) @id
-  username  String    @unique
+  id         Int       @id @default(autoincrement())
+  username   String    @unique
   first_name String
   last_name  String
-  email     String    @unique
-  password  String
-  avatar String?
-  messages  Message[]
-  chats     Chat[]    @relation("UserChats")
+  email      String    @unique
+  password   String
+  avatar     String?
+  messages   Message[]
+  chats      Chat[]    @relation("UserChats")
 }
 
 model Message {
-  id        Int      @default(autoincrement()) @id
+  id        Int      @id @default(autoincrement())
   author    User     @relation(references: [id], fields: [authorId])
   authorId  Int
   username  String
@@ -34,12 +34,14 @@ model Message {
   createdAt DateTime @default(now())
   chat      Chat     @relation(fields: [chatId], references: [id])
   chatId    Int
+  file      String?
 }
 
 model Chat {
-  id        Int      @default(autoincrement()) @id
-  name      String
-  avatar String?
-  users     User[]   @relation("UserChats")
-  messages  Message[]
+  id               Int       @id @default(autoincrement())
+  name             String
+  background_image String?
+  avatar           String?
+  users            User[]    @relation("UserChats")
+  messages         Message[]
 }

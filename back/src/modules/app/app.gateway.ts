@@ -15,6 +15,7 @@ import { join } from 'path'; // Импортируем join для создан�
 export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor(private readonly appService: AppService) {}
   @WebSocketServer() server: Server;
+  private fileChunks = new Map<string, Buffer[]>();
   @SubscribeMessage('sendMessage')
   async handleSendMessage(client: any, payload: {text: string, createdAt?: Date | string, userId: string, chatId: string}): Promise<void> {
     const msg = await this.appService.createMessage(payload);
@@ -67,6 +68,41 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     }
     const user = await this.appService.updateUser(payload);
     this.server.emit('updUser', user);
+  }
+
+  @SubscribeMessage('updateBackgroundImgChat')
+  async handleUpdateBackgroundImgChat(
+    client: any,
+    payload: Prisma.ChatCreateInput & { chatId: number; image: string; name: string; chunkIndex?: number; totalChunks?: number }
+  ) {
+    const { image, name, chunkIndex, totalChunks, chatId } = payload;
+
+    if (image && chunkIndex !== undefined && totalChunks !== undefined) {
+      const fileKey = `${name}_${chatId}`;
+      if (!this.fileChunks.has(fileKey)) {
+        this.fileChunks.set(fileKey, []);
+      }
+
+      const chunkBuffer = Buffer.from(image.split(',')[1], 'base64');
+      this.fileChunks.get(fileKey).push(chunkBuffer);
+
+      if (chunkIndex === totalChunks - 1) {
+        const avatarPath = this.saveImg(this.fileChunks.get(fileKey), name);
+        payload.image = avatarPath; // Сохранить путь к аватарке в payload
+        this.fileChunks.delete(fileKey);
+
+        const chat = await this.appService.updateBackgroundImgChat(payload);
+        this.server.emit('updImgChat', chat);
+      }
+    }
+  }
+
+  private saveImg(fileChunks: Buffer[], chatName: string): string {
+    const buffer = Buffer.concat(fileChunks);
+    const date = new Date().getTime();
+    const filePath = `./uploads/${chatName}_${date}.png`; // Пример пути сохранения
+    writeFileSync(filePath, buffer);
+    return filePath;
   }
 
   afterInit(server: any) {

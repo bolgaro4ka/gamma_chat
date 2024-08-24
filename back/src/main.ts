@@ -6,12 +6,13 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  app.enableCors({ origin: ['http://localhost:5000', 'http://192.168.0.228:5000'], credentials: true });
   // Используем middleware cookie-parser
   app.use(cookieParser());
 
   // Настраиваем middleware csurf
-  app.use(csurf({ cookie: true }));
-  app.enableCors({ origin: ['http://localhost:5000', 'http://192.168.0.228:5000'], credentials: true });
+  
+  
   await app.listen(3000);
 
 

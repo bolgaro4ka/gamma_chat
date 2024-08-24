@@ -38,14 +38,27 @@ export class AppService {
         id: authorId
       },
       select: {
-        avatar: true
+        avatar: true,
+        id: true
       }
     });
   
     return {
       ...message,
-      authorAvatar: author.avatar
+      authorAvatar: author.avatar,
+      authorId: author.id
     };
+  }
+
+  async updateBackgroundImgChat(data: Prisma.ChatCreateInput & { chatId: number, image: string, name: string }) {
+    return await this.prisma.chat.update({
+      where: {
+        id: data.chatId
+      },
+      data: {
+        background_image: data.image
+      },
+    })
   }
 
   async updateUser(data: { 'username': string, 'userId': number, 'avatar'?: string, 'first_name': string, 'last_name': string }) : Promise<any> {
@@ -77,7 +90,8 @@ export class AppService {
       include: {
         author: {
           select: {
-            avatar: true
+            avatar: true,
+            id: true,
           }
         }
       }
@@ -91,8 +105,8 @@ export class AppService {
       },
       include: {
         messages: true,
-        users: true
-      }
+        users: true,
+      },
     })
   }
 

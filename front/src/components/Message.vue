@@ -2,7 +2,7 @@
 
 import { ref } from 'vue';
 
-const props= defineProps(['src', 'pos'])
+const props= defineProps(['src', 'pos', 'userId'])
 
 const isValidImg = ref(props.src.includes('undefined') ? false : true)
 
@@ -11,8 +11,8 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
 
 <template>
 
-    <div class="message" v-bind="$attrs">
-        <img class="avatar" :src="isValidImg ? props.src : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" v-if="$props.pos == 'left'" >
+    <div class="message" v-bind="$attrs" :userId="$props.userId">
+        <img class="avatar" :src="isValidImg ? props.src : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" v-if="$props.pos == 'left'">
         <div class="message-body">
             <p class="username"><slot name="username"></slot></p>
             <p class="text"><slot name="message"></slot></p>

@@ -12,6 +12,7 @@ import Loader from './Loader.vue';
 import UpdateChat from './UpdateChat.vue';
 import Modal from './Modal.vue';
 import { useRoute } from 'vue-router';
+import UpdateImgChat from './UpdateImgChat.vue';
 
 
 const me = await getMe();
@@ -22,6 +23,7 @@ const chats : any = ref(chats_axios.data)
 
 const isContextMenuOpen = ref(false)
 const isUpdateModalOpen = ref(false)
+const isImageModalOpen = ref(false)
 
 const contextMenu : Ref<null> | Ref<HTMLElement> = ref(null)
 const currentChatID : Ref<null> | Ref<string> = ref(null)
@@ -52,6 +54,14 @@ function handleDestroyChat(e : MouseEvent) {
     const chatID = currentChatID.value;
     isContextMenuOpen.value = false
     socket.emit('deleteChat', Number(chatID))
+}
+
+function handleUpdateBg(e : MouseEvent) {
+    e.preventDefault();
+    const chatID = currentChatID.value;
+    isContextMenuOpen.value = false
+    isImageModalOpen.value = !isImageModalOpen.value
+
 }
 
 document.getElementsByTagName('main')[0].addEventListener('closeContextsMenu', () => {
@@ -124,12 +134,23 @@ function handleUpdateChat(e : MouseEvent) {
         <div class="contextMenu" v-show="isContextMenuOpen" ref="contextMenu">
             <div class="contextMenu__delete contextMenu__item" @click="handleDestroyChat">Удалить чат</div>
             <div class="contextMenu__update contextMenu__item" @click="handleUpdateChat">Изменить чат</div>
+            <div class="contextMenu__updateBg contextMenu__item" @click="handleUpdateBg">Изменить задний фон</div>
         </div>
     </Teleport>
     <Teleport to="body">
         <Modal v-if="isUpdateModalOpen" @close="isUpdateModalOpen = false" title="Обновление чата">
             <Suspense>
                 <UpdateChat @close="isUpdateModalOpen = false" :chatID="currentChatID"/>
+                <template #fallback>
+                    <Loader/>
+                </template>
+            </Suspense>
+        </Modal>
+    </Teleport>
+    <Teleport to="body">
+        <Modal v-if="isImageModalOpen" @close="isImageModalOpen = false" title="Обновление изображения">
+            <Suspense>
+                <UpdateImgChat @close="isImageModalOpen = false" :chatID="currentChatID"/>
                 <template #fallback>
                     <Loader/>
                 </template>
