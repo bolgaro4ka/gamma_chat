@@ -69,4 +69,13 @@ export class AppController {
 
     res.json( chat );
   }
+
+  @UseGuards(JwtGuard)
+  @Get('/api/user/:id/')
+  async getUser(@Res() res, @Param('id') userId: string) {
+    const user = await this.userService.getUserById(parseInt(userId));
+    res.json( user );
+  }
+
+  
 }

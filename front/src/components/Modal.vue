@@ -1,64 +1,76 @@
 <script setup lang="ts">
   import { ref, onMounted, onUnmounted, type Ref } from 'vue';
   
-  const props : any = defineProps({
+  const props: any = defineProps({
     title: {
       type: String,
     }
   });
-  const emits : any = defineEmits(['close']);
+  const emits: any = defineEmits(['close']);
   
-  const md_content : Ref<null> | Ref<HTMLElement> = ref(null) as Ref<null> | Ref<HTMLElement>;
-  const md_header : Ref<null> | Ref<HTMLElement> = ref(null) as Ref<null> | Ref<HTMLElement>;
+  const md_content: Ref<null> | Ref<HTMLElement> = ref(null) as Ref<null> | Ref<HTMLElement>;
+  const md_header: Ref<null> | Ref<HTMLElement> = ref(null) as Ref<null> | Ref<HTMLElement>;
   
-  const pos : Ref<{ x: number, y: number, offsetX: number, offsetY: number, dragging: boolean }> = ref({ x: 0, y: 0, offsetX: 0, offsetY: 0, dragging: false });
+  const pos: Ref<{ x: number, y: number, offsetX: number, offsetY: number, dragging: boolean }> = ref({ x: 0, y: 0, offsetX: 0, offsetY: 0, dragging: false });
   
-  const onDragStart = (e : MouseEvent) : void => {
+  const onDragStart = (e: MouseEvent | TouchEvent): void => {
     pos.value.dragging = true;
-    pos.value.offsetX = e.offsetX;
-    pos.value.offsetY = e.offsetY;
+    if (e instanceof MouseEvent) {
+      pos.value.offsetX = e.offsetX;
+      pos.value.offsetY = e.offsetY;
+    } else if (e instanceof TouchEvent) {
+      const touch = e.touches[0];
+      pos.value.offsetX = touch.clientX - (md_content.value as HTMLElement).offsetLeft;
+      pos.value.offsetY = touch.clientY - (md_content.value as HTMLElement).offsetTop;
+    }
   };
   
-  const onDrag = (e : MouseEvent) : void => {
+  const onDrag = (e: MouseEvent | TouchEvent): void => {
     if (!pos.value.dragging) return;
-    pos.value.x = e.clientX - pos.value.offsetX;
-    pos.value.y = e.clientY - pos.value.offsetY;
+    if (e instanceof MouseEvent) {
+      pos.value.x = e.clientX - pos.value.offsetX;
+      pos.value.y = e.clientY - pos.value.offsetY;
+    } else if (e instanceof TouchEvent) {
+      const touch = e.touches[0];
+      pos.value.x = touch.clientX - pos.value.offsetX;
+      pos.value.y = touch.clientY - pos.value.offsetY;
+    }
     if (md_content.value) {
       (md_content.value as HTMLElement).style.left = `${pos.value.x}px`;
       (md_content.value as HTMLElement).style.top = `${pos.value.y}px`;
     }
   };
   
-  const onDragEnd = () : void => {
+  const onDragEnd = (): void => {
     pos.value.dragging = false;
   };
 
-  function handleClose (e : MouseEvent) {
+  function handleClose(e: MouseEvent) {
     if (e.target === e.currentTarget) emits('close')
   }
   
-  onMounted(() : void => {
+  onMounted((): void => {
     const header = md_header.value as HTMLElement;
     header.addEventListener('mousedown', onDragStart);
+    header.addEventListener('touchstart', onDragStart);
     document.addEventListener('mousemove', onDrag);
+    document.addEventListener('touchmove', onDrag);
     document.addEventListener('mouseup', onDragEnd);
+    document.addEventListener('touchend', onDragEnd);
   });
 
-  
-  
-  onUnmounted(() : void => {
+  onUnmounted((): void => {
     const header = md_header.value;
     if (header) {
-        header.removeEventListener('mousedown', onDragStart);
+      header.removeEventListener('mousedown', onDragStart);
+      header.removeEventListener('touchstart', onDragStart);
     }
     document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('touchmove', onDrag);
     document.removeEventListener('mouseup', onDragEnd);
+    document.removeEventListener('touchend', onDragEnd);
   });
-
-  
-  </script>
-
-
+</script>
 
 <template>
     <div class="modal" @click="handleClose">
@@ -76,7 +88,7 @@
         </div>
       </div>
     </div>
-  </template>
+</template>
   
   
 <style scoped lang="scss">

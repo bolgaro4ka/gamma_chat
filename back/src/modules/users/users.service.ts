@@ -52,4 +52,8 @@ export class UsersService {
     public async getUserByEmail(email:string) {
         return this.prismaService.user.findUnique({ where: { email }, select: {...APP_USER_FIELDS}})
     }
+
+    public async getUserById(id:number) {
+        return this.prismaService.user.findUnique({ where: { id }, select: {...APP_USER_FIELDS}})
+    }
 }

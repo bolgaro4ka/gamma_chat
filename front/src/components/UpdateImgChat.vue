@@ -18,6 +18,21 @@ const CHUNK_SIZE = 64 * 1024; // 64KB
 
 async function handleCreate(e: Event) {
   e.preventDefault();
+  const extension = imgFile.value?.name.split('.').pop();
+  const file_size = imgFile.value?.size;
+  const allowedExtensions = ['BMP', 'ECW', 'GIF', 'ICO', 'ILBM', 'JPEG', 'JPEG 2000', 'MrSID', 'PCX', 'PNG', 'PSD', 'TGA', 'TIFF', 'JFIF', 'HD Photo', 'WebP', 'XBM', 'XPS', 'RLA', 'RPF', 'PNM', 'JPG'];
+
+  if (extension && !allowedExtensions.includes(extension.toUpperCase())) {
+    alert('Неверное расширение');
+    return;
+  }
+
+  if (file_size && file_size > 10 * 1024 * 1024) {
+    alert('Размер файла не должен превышать 10 МБ');
+    return;
+  }
+
+
   if (imgFile.value) {
     await sendFileInChunks(imgFile.value);
   }
@@ -25,6 +40,7 @@ async function handleCreate(e: Event) {
 }
 
 function handleLoadFile(e: Event) {
+  
   const input = e.target as HTMLInputElement;
   if (input.files && input.files[0]) {
     imgFile.value = input.files[0];

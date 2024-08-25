@@ -22,6 +22,7 @@ const ame = await getMe();
 
 const me = ref(ame);
 const host = ref(axios.defaults.baseURL)
+const isMobilePanelOpen = ref(true);
 
 const user : Reactive<{ "id": number, "email": string, "username": string }> = reactive({"id": 0, "email": '', "username": ''});
 
@@ -71,7 +72,11 @@ if (localStorage.getItem('needReload') === 'true') {
 </script>
 
 <template>
-    <div class="chatsPanel">
+    <div class="chatsPanel__open" @click="isMobilePanelOpen = !isMobilePanelOpen">
+        <svg xmlns="http://www.w3.org/2000/svg" v-if="isMobilePanelOpen" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px"  v-else viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+    </div>
+    <div class="chatsPanel" v-if="isMobilePanelOpen">
         <div class="chatsPanel__wrapper">
             <div class="chatsPanel__content">
                 <div class="chatsPanel__userContent">
@@ -99,7 +104,7 @@ if (localStorage.getItem('needReload') === 'true') {
                 <h3>Список чатов</h3>
                 <div class="chatsPanel__chats" v-if="user.id">
                     <Suspense>
-                        <ChatsBtns></ChatsBtns>
+                        <ChatsBtns @closeMobilePanel="isMobilePanelOpen = false"></ChatsBtns>
 
                         <template #fallback>
                             <Loader/>
@@ -139,13 +144,41 @@ if (localStorage.getItem('needReload') === 'true') {
 
 <style scoped lang="scss">
 
+@media screen and (max-width: 800px) {
+
+    .chatsPanel {
+        width: 100vw !important;
+        position: fixed;
+        display: block;
+        height: 100vh;
+    }
+
+    .chatsPanel__open {
+        display: block !important;
+        position: fixed;
+        top: 20px;
+        right: calc(50vw - 15px);
+        width: 44px;
+        height: 44px;
+        z-index: 1;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+        border-radius: 2000px;
+    }
+    
+}
+
+.chatsPanel__open {
+    display: none;
+}
+
 .chatsPanel {
-    height: 100vh;
+    height: 100dvh;
     overflow-y: visible;
     overflow-x: hidden;
     background-color: #2a3038;
     padding: 20px;
-    width: 400px;
+    width: 330px;
     &__status {
         display: flex;
         justify-content: space-between;

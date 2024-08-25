@@ -8,53 +8,78 @@ export class AppService {
   constructor(private readonly prisma: PrismaService
   ) {}
   async createMessage(data: {text: string, createdAt?: Date | string, userId: string, chatId: string}) : Promise<Message & {authorAvatar: string}> {
-    const authorId = parseInt(data.userId);
-    const chatId = parseInt(data.chatId);
-    const user = await this.prisma.user.findUnique({where: {id: authorId}})
-
-    console.log('Msg from: ', user.username);
-    
-    const message = await this.prisma.message.create({
-      data: {
-        text: data.text,
-        chat: {
-          connect: {
-            id: chatId
-          }
-        },
-        createdAt: data.createdAt,
-        username: user.username,
-        author: {
-          connect: {
-            id: authorId
+    try {
+      console.log('Received data:', data);
+  
+      const authorId = parseInt(data.userId);
+      const chatId = parseInt(data.chatId);
+  
+      console.log('Parsed authorId:', authorId, 'Parsed chatId:', chatId);
+  
+      const user = await this.prisma.user.findUnique({ where: { id: authorId } });
+  
+      if (!user) {
+        throw new Error('User not found');
+      }
+  
+      console.log('User found:', user);
+  
+      const message = await this.prisma.message.create({
+        data: {
+          text: data.text,
+          chat: {
+            connect: { id: chatId }
+          },
+          createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+          username: user.username,
+          author: {
+            connect: { id: authorId }
           }
         }
-      }
-    });
+      });
   
-    // Дополнительный запрос для получения аватара автора
-    const author = await this.prisma.user.findUnique({
-      where: {
-        id: authorId
-      },
-      select: {
-        avatar: true,
-        id: true
-      }
-    });
+      console.log('Message created:', message);
   
-    return {
-      ...message,
-      authorAvatar: author.avatar,
-      authorId: author.id
-    };
+      const author = await this.prisma.user.findUnique({
+        where: { id: authorId },
+        select: { avatar: true, id: true }
+      });
+  
+      if (!author) {
+        throw new Error('Author not found');
+      }
+  
+      console.log('Author found:', author);
+  
+      return {
+        ...message,
+        authorAvatar: author.avatar,
+        authorId: author.id
+      };
+    } catch (error) {
+      console.error('Error creating message:', error);
+      throw error;
+    }
   }
 
   async createMessageWithFile(data: {text: string, createdAt?: Date | string, userId: string, chatId: string, file: string}) : Promise<Message & {authorAvatar: string, file: string}> {
     console.log(data, 'saving...');
     const authorId = parseInt(data.userId);
     const chatId = parseInt(data.chatId);
-    const user = await this.prisma.user.findUnique({where: {id: authorId}})
+
+
+    const user = await this.prisma.user.findUnique(
+      {
+        where: {
+          id: authorId
+        },
+        select: {
+          avatar: true,
+          id: true,
+          username: true
+        }
+        }
+      )
 
     console.log('Msg from: ', user.username);
     
@@ -66,7 +91,6 @@ export class AppService {
             id: chatId
           }
         },
-        createdAt: data.createdAt,
         username: user.username,
         file: data.file,
         author: {
@@ -79,22 +103,14 @@ export class AppService {
 
     console.log(message, 'saved');
   
-    // Дополнительный запрос для получения аватара автора
-    const author = await this.prisma.user.findUnique({
-      where: {
-        id: authorId
-      },
-      select: {
-        avatar: true,
-        id: true
-      }
-    });
+
+    console.log(message, user, 'saved!!!');
   
     return {
       ...message,
       file: data.file,
-      authorAvatar: author.avatar,
-      authorId: author.id
+      authorAvatar: user.avatar,
+      authorId: user.id
     };
   }
   

@@ -38,7 +38,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     const base64Data = avatarData.replace(/^data:image\/\w+;base64,/, '');
     const buffer = Buffer.from(base64Data, 'base64');
     const date = new Date().getTime();
-    const filePath = `./uploads/${chatName}_${date}.png`; // Пример пути сохранения
+    const filePath = `./uploads/avatars/${chatName}_${date}.png`; // Пример пути сохранения
     writeFileSync(filePath, buffer);
     return filePath;
   }
@@ -103,7 +103,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   private saveImg(fileChunks: Buffer[], chatName: string): string {
     const buffer = Buffer.concat(fileChunks);
     const date = new Date().getTime();
-    const filePath = `./uploads/${chatName}_${date}.png`; // Пример пути сохранения
+    const filePath = `./uploads/backgrounds/${chatName}_${date}.png`; // Пример пути сохранения
     writeFileSync(filePath, buffer);
     return filePath;
   }
@@ -111,7 +111,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
   private saveFile(fileChunks: Buffer[], chatName: string, ext: string): string {
     const buffer = Buffer.concat(fileChunks);
     const date = new Date().getTime();
-    const filePath = `./uploads/${chatName}_${date}.${ext}`; // Пример пути сохранения
+    const filePath = `./uploads/files/${chatName}_${date}.${ext}`; // Пример пути сохранения
     writeFileSync(filePath, buffer);
     return filePath;
   }

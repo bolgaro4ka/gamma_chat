@@ -98,6 +98,8 @@ function fileToBase64(file: File): Promise<string> {
 
 
 <style scoped lang="scss">  
+
+
 .createChat {
     form {
         display: flex;
@@ -159,5 +161,38 @@ function fileToBase64(file: File): Promise<string> {
         align-items: center;
         justify-content: center;
     }
+}
+
+@media screen and (max-width: 800px) {
+    .createChat {
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            height: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #2a3038;
+
+            select {
+                width: 100%;
+                height: 100px;
+            }
+
+
+            .peoples {
+                display: flex;
+                width: 100%;
+                flex-direction: column;
+
+                svg {
+                    transform: scale(1.5) rotate(0.25turn);
+                    margin: 10px 0 ;
+                }
+            }
+        }
+    }
+    
 }
 </style>

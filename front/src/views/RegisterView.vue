@@ -18,13 +18,24 @@ const router = useRouter()
 
 function login(e : Event) {
     e.preventDefault();
-    if (!username.value || !password.value || !email.value || !first_name.value || !last_name.value) error.value = 'Все поля должны быть заполнены'
-    if (username.value.length <= 1 || password.value.length  <= 1 || email.value.length  <= 1 || first_name.value.length  <= 1 || last_name.value.length  <= 1) error.value = 'Какое-то/Какие-то поле (-я) содержит (-ат) меньше или равно 1 знака'
-    if (password.value.length <= 8) error.value = 'Пароль должен содержать не менее 8 символов'
-    if (/(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*()]{6,}/g .test(password.value) === false) error.value = 'Пароль должен содержать не менее 1 цифры, 1 прописной буквы, 1 строчной буквы и 1 специальный символ'
+
+    error.value = '';
+    const regexp_no_special = /^[a-zA-Z0-9]+$/;
+    if (!username.value || !password.value || !email.value || !first_name.value || !last_name.value) error.value += 'Все поля должны быть заполнены <br/> '
+    if (username.value.length <= 1 || password.value.length  <= 1 || email.value.length  <= 1 || first_name.value.length  <= 1 || last_name.value.length  <= 1) error.value += 'Какое-то/Какие-то поле (-я) содержит (-ат) меньше или равно 1 знака<br/>'
+    if (username.value.length >= 15) error.value += 'Логин должен содержать не более 15 символов<br/>'
+    if (first_name.value.length >= 15) error.value += 'Имя должно содержать не более 15 символов<br/>'
+    if (last_name.value.length >= 15) error.value += 'Фамилия должна содержать не более 15 символов<br/>'
+    if (regexp_no_special.test(username.value) === false) error.value += 'Логин должен содержать только буквы и цифры<br/>'
+    if (password.value.length <= 8) error.value += 'Пароль должен содержать не менее 8 символов<br/>'
+    if (/(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z!@#$%^&*()]{6,}/g .test(password.value) === false) error.value += 'Пароль должен содержать не менее 1 цифры, 1 прописной буквы, 1 строчной буквы и 1 специальный символ<br/>'
+
+    if (error.value) {
+        return
+    }
 
     console.log(username.value, password.value);
-    axios.post('http://127.0.0.1:3000/auth/reg', {
+    axios.post('/auth/reg', {
         username: username.value,
         email: email.value,
         password: password.value,
@@ -59,7 +70,7 @@ function login(e : Event) {
             <label for="last_name" >Фамилия</label>
             <input type="text" id="last_name" name="last_name" v-model="last_name">
             <button type="submit">Регистрация</button>
-            <p v-if="error" class="error">{{ error }}</p>
+            <p v-if="error" class="error" :innerHTML="error" ></p>
         </div>
     </form>
 </template>
@@ -118,6 +129,7 @@ form {
 .error {
     color: red;
     text-align: center;
+    max-width: 400px;
     font-weight: bolder;
 }
 </style>

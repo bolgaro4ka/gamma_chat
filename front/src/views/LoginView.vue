@@ -17,7 +17,17 @@ const emit = defineEmits(['login'])
 
 function login(e : Event) {
     e.preventDefault();
-    axios.post('http://127.0.0.1:3000/auth/login', {
+
+    error.value = ''
+
+    if (!email.value || !password.value) error.value += 'Заполните все поля <br/>'
+    if (email.value.length <= 1 || password.value.length <= 1) error.value += 'Какое-то/Какие-то поле (-я) содержит (-ат) меньше или равно 1 знака<br/>'
+    if (!email.value.includes('@')) error.value += 'Email должен содержать @<br/>'
+
+    if (error.value) return
+
+
+    axios.post('/auth/login', {
         email: email.value,
         password: password.value
     }).then((response) => {
@@ -45,7 +55,7 @@ function login(e : Event) {
                 <label for="password" >Пароль</label>
                 <input type="password" id="password" name="password" v-model="password">
                 <button type="submit">Войти</button>
-                <p v-if="error" class="error">{{ error }}</p>
+                <p v-if="error" class="error" :innerHTML="error"></p>
             </div>
         </form>
     

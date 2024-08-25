@@ -1,7 +1,7 @@
 import {io } from 'socket.io-client';
 import { reactive } from 'vue';
 
-export const socket = io('http://localhost:3000', { transports: ['websocket'] });
+export const socket = io('http://192.168.0.228:3000', { transports: ['websocket'] });
 
 export const state = reactive({
     connected: false,

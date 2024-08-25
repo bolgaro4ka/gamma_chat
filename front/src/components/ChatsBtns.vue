@@ -19,6 +19,7 @@ const me = await getMe();
 const host = ref(axios.defaults.baseURL)
 
 const chats_axios = await axios.get('/api/my/chats')
+const emits = defineEmits(['closeMobilePanel'])
 const chats : any = ref(chats_axios.data)
 
 const isContextMenuOpen = ref(false)
@@ -116,7 +117,7 @@ function handleUpdateChat(e : MouseEvent) {
 
 <template>
     <div v-if="chats">
-        <RouterLink v-for="chat in chats" :key="chat.id" :to="`/chat/${chat.id}`" >
+        <RouterLink v-for="chat in chats" :key="chat.id" :to="`/chat/${chat.id}`" @click="emits('closeMobilePanel')">
             <div class="chatsBtn" @contextmenu="handleContextMenu" :chatId="chat.id" :class="chat.id == route.params.id ? 'chatsBtn__active' : ''">
                 <template v-if="chat.avatar">
                     <img :src="host+chat.avatar?.replace('.', '')" alt="avatar">
@@ -162,6 +163,8 @@ function handleUpdateChat(e : MouseEvent) {
 </template>
 
 <style scoped lang="scss">
+
+    
 
     a {
         text-decoration: none;

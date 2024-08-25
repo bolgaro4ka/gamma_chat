@@ -57,10 +57,14 @@ isAuthOrRedirectToLogin(router);
 <style scoped>
 main {
   display: flex;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 .content {
   width: 100%;
+  height: 100dvh;
+  overflow: auto;
 }
 
 </style>

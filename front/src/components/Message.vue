@@ -4,6 +4,8 @@ import { ref } from 'vue';
 
 const props= defineProps(['src', 'pos', 'userId', 'file'])
 
+const emits = defineEmits(['openMenu']);
+
 const isValidImg = ref(props.src.includes('undefined') ? false : true)
 
 
@@ -12,7 +14,12 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
 <template>
 
     <div class="message" v-bind="$attrs" :userId="$props.userId">
-        <img class="avatar" :src="isValidImg ? props.src : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" v-if="$props.pos == 'left'">
+        <img class="avatar" 
+            :src="isValidImg ? props.src : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" 
+            v-if="$props.pos == 'left'" 
+            @contextmenu="$emit('openMenu', $event)" 
+            :userId="$props.userId"
+        >
         <div class="message-body">
             <div v-if="$props.file">
                 <div :class="`file ${props.pos}`">
@@ -27,12 +34,30 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
                 <p class="time"><slot name="time"></slot></p>
             </div>
         </div>
-        <img class="avatar" :src="isValidImg ? props.src : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" v-if="$props.pos == 'right'">
+        <img class="avatar" 
+            :src="isValidImg ? props.src : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'" 
+            v-if="$props.pos == 'right'" 
+            @contextmenu="$emit('openMenu', $event)" 
+            :userId="$props.userId"
+        >
     </div>
 
 </template>
 
 <style scoped lang="scss">
+@media screen and (max-width: 800px) {
+
+    .message {
+        width: 90%;
+
+        * {
+            font-size: 12px;
+            word-break: break-all;
+        }
+    }
+    
+}
+
     .message {
         display: flex;
         gap: 10px;
