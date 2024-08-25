@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^1.7.4",
+    "gsap": "^3.12.5",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
     "vue": "^3.4.29",

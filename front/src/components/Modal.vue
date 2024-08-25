@@ -94,6 +94,7 @@
 <style scoped lang="scss">
     .modal {
         position: fixed;
+        z-index: 10;
         top: 0;
         left: 0;
         width: 100%;
@@ -106,6 +107,7 @@
 
     .modal__content {
         position: absolute;
+        z-index: 10;
         background: #287a9b;
         
         

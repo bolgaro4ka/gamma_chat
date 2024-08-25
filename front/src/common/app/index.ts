@@ -10,7 +10,7 @@ export function redirect(router : Router, path : string) : void {
 
 export function isAuthOrRedirectToLogin(router : Router) : void {
 
-    if (location.pathname === '/login' || location.pathname === '/reg') {
+    if (location.pathname === '/login' || location.pathname === '/reg' || location.pathname === '/promo') {
         return
     }
     

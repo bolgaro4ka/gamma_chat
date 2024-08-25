@@ -23,6 +23,7 @@ const ame = await getMe();
 const me = ref(ame);
 const host = ref(axios.defaults.baseURL)
 const isMobilePanelOpen = ref(true);
+const isMobileView = ref(window.innerWidth < 768);
 
 const user : Reactive<{ "id": number, "email": string, "username": string }> = reactive({"id": 0, "email": '', "username": ''});
 
@@ -83,7 +84,7 @@ if (localStorage.getItem('needReload') === 'true') {
                     <div class="chatsPanel__avatar"><img :src="me?.avatar ? host+me?.avatar?.replace('.', '') : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'"/></div>
                     <div class="chatsPanel__userInfo">
                         <div class="chatsPanel__user"><p>{{ user.username ? user.username : 'Не авторизирован' }}</p></div>
-                        <div class="chatsPanel__email"><p>{{ user.email ? user.email : '' }}</p></div>
+                        
                         <div class="chatsPanel__id"><p>{{ user.id ? user.id : '' }}</p></div>
                     </div>
                     <div class="chatsPanel__btns">
@@ -104,7 +105,7 @@ if (localStorage.getItem('needReload') === 'true') {
                 <h3>Список чатов</h3>
                 <div class="chatsPanel__chats" v-if="user.id">
                     <Suspense>
-                        <ChatsBtns @closeMobilePanel="isMobilePanelOpen = false"></ChatsBtns>
+                        <ChatsBtns @closeMobilePanel="isMobileView ?   isMobilePanelOpen = false : isMobilePanelOpen = true"></ChatsBtns>
 
                         <template #fallback>
                             <Loader/>
@@ -151,6 +152,7 @@ if (localStorage.getItem('needReload') === 'true') {
         position: fixed;
         display: block;
         height: 100vh;
+        z-index: 2;
     }
 
     .chatsPanel__open {
@@ -160,7 +162,7 @@ if (localStorage.getItem('needReload') === 'true') {
         right: calc(50vw - 15px);
         width: 44px;
         height: 44px;
-        z-index: 1;
+        z-index: 3;
         background-color: rgba(0, 0, 0, 0.5);
         padding: 10px;
         border-radius: 2000px;

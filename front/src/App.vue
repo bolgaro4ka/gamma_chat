@@ -45,7 +45,7 @@ isAuthOrRedirectToLogin(router);
   <main @click="handleGlobalClick">
     <Suspense><ChatsPanel :key="key"/><template #fallback><Loader/></template></Suspense>
     <Suspense>
-      <div class="content" ><RouterView @login="handleLogin " class="content" /></div>
+      <div class="content"><RouterView @login="handleLogin " class="content" /></div>
       <template #fallback>
         <Loader/>
       </template>
