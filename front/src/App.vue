@@ -8,6 +8,7 @@ import { useRoute } from 'vue-router';
 import axios from 'axios';
 import { watch } from 'vue';
 import Loader from './components/Loader.vue';
+import IApp from './components/IApp.vue';
 
 const router = useRouter()
 
@@ -43,6 +44,7 @@ isAuthOrRedirectToLogin(router);
 
 <template>
   <main @click="handleGlobalClick">
+     <IApp v-if="false"/> 
     <Suspense><ChatsPanel :key="key"/><template #fallback><Loader/></template></Suspense>
     <Suspense>
       <div class="content"><RouterView @login="handleLogin " class="content" /></div>

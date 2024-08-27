@@ -6,10 +6,14 @@ import router from './router'
 
 import axios from 'axios'
 
+
+
+
+
 const app = createApp(App)
 
 axios.defaults.withCredentials = true
-axios.defaults.baseURL = 'http://192.168.0.228:3000'
+axios.defaults.baseURL = 'https://gamma-api.paia1nik.ru'
 axios.defaults.headers.common['Authorization'] = localStorage.getItem('token')
 
 

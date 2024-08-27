@@ -3,7 +3,7 @@
 import { redirect, reloadPage } from '@/common/app';
 import axios from 'axios';
 import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 const password = ref('');
 const email = ref('');
@@ -55,6 +55,7 @@ function login(e : Event) {
                 <label for="password" >Пароль</label>
                 <input type="password" id="password" name="password" v-model="password">
                 <button type="submit">Войти</button>
+                <RouterLink to="/reg" class="btn_reg">Регистрация</RouterLink>
                 <p v-if="error" class="error" :innerHTML="error"></p>
             </div>
         </form>
@@ -70,11 +71,25 @@ function login(e : Event) {
     justify-content: center;
     align-items: center;
     padding: 20px 0;
-    width: 500px;
+    max-width: 500px;
+    min-width: 300px;
     border: 10px solid;
     border-image-slice: 1;
     border-width: 5px;
-    border-image-source: var(--tg-gradient)
+    border-image-source: var(--tg-gradient);
+
+    .btn_reg {
+        color: white;
+        
+        border-image: var(--tg-gradient);
+        border-image-slice: 1;
+        border-width: 3px;
+        border-style: solid;
+        border-radius: 10px;
+        padding: 3px 30px;
+        margin-top: 10px;
+        text-decoration: none;
+    }
 }
 form {
     display: flex;
@@ -90,7 +105,7 @@ form {
     }
 
     input {
-        width: 40%;
+        width: 80%;
         height: 30px;
         border-radius: 20px;
         border: none;
