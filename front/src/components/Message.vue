@@ -123,7 +123,7 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
 
         .text {
             word-break: break-word;
-            width: 480px;
+            width: 100%;
         }
 
         .username {
