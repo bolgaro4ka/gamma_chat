@@ -122,7 +122,7 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
         }
 
         .text {
-            word-break: break-all;
+            word-break: break-word;
         }
 
         .username {
