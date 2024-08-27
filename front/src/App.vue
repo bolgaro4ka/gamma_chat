@@ -66,7 +66,7 @@ main {
 .content {
   width: 100%;
   height: 100dvh;
-  overflow: auto;
+  overflow-x: hidden;
 }
 
 </style>
