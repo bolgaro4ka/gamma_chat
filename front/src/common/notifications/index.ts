@@ -1,7 +1,7 @@
 export function notifyMe(text: string) {
     // Проверка поддержки браузером уведомлений
     if (!("Notification" in window)) {
-      alert("This browser does not support desktop notification");
+      return
     }
   
     // Проверка разрешения на отправку уведомлений
