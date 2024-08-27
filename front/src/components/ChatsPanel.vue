@@ -152,6 +152,8 @@ if (localStorage.getItem('needReload') === 'true') {
         position: fixed;
         display: block;
         height: 100vh;
+        overflow-x: hidden;
+        overflow-y: hidden;
         z-index: 2;
     }
 
