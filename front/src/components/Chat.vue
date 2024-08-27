@@ -212,6 +212,8 @@ socket.on('recMessageWithFile', (msgu) => {
 <style scoped lang="scss">
 .chat__wrapper {
     min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 .chat__container {
     height: calc(100dvh - 70px);
