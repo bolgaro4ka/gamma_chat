@@ -132,7 +132,7 @@ socket.on('updImgChat', (msgu) => {
     console.error('CHANGE')
     if (msgu.id != route.params.id) return
     if (!chatEl.value) return
-    chatEl.value.style.backgroundImage = `url(${host.value+msgu.background_image?.replace('.', '')})`
+    (chatEl as any).value.style.backgroundImage = `url(${host.value+msgu.background_image?.replace('.', '')})`
 })
 
 socket.on('recMessageWithFile', (msgu) => {

@@ -8,7 +8,7 @@ export function notifyMe(text: string) {
     else if (Notification.permission === "granted") {
       // Если разрешено, то создаём уведомление
       var notification = new Notification(text, {
-          title: 'Gamma Chat',
+        body: text,
       });
     }
   

@@ -16,10 +16,10 @@ const props = defineProps(['chatID'])
 
 const avatarFile = ref<File | null>(null);
 
-const not_selected = ref([])
+const not_selected : Ref<any> = ref([])
 const finds = ref(not_selected.value)
 
-const selected = ref<string[]>([])
+const selected = ref<any>([])
 const selectedIds : Ref<number[]> = ref([])
 
 const chat = await axios.get('/api/chat/' + props.chatID + '/info')
@@ -45,7 +45,7 @@ function handleFind (e : Event) {
     const value = (e.target as HTMLInputElement).value
     not_selected.value = []
     for (let string of not_selected.value) {
-        if (string[0].toLowerCase().includes(value.toLowerCase()) && !selected.value.includes(string as never)) {
+        if (string[0].toLowerCase().includes(value.toLowerCase()) && !selected.value.includes(string)) {
             finds.value.push(string as never)
         }
     }
