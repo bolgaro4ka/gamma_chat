@@ -121,6 +121,10 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
             }
         }
 
+        .text {
+            word-break: break-all;
+        }
+
         .username {
             color: #85de85;
             font-weight: bold;
@@ -142,6 +146,8 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
     .message-left {
         text-align: left;
     }
+
+    
 
 
 </style>
