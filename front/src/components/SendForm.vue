@@ -17,6 +17,10 @@ const emits = defineEmits(['close'])
 const CHUNK_SIZE = 64 * 1024; // 64KB
 
 async function handleCreate(e: Event) {
+  if (msgInput.value.length > 1000) {
+    alert('Куда столько символов')
+     return
+  }
   e.preventDefault();
   if (file.value) {
     await sendFileInChunks(file.value);
@@ -24,6 +28,10 @@ async function handleCreate(e: Event) {
 }
 
 function handleLoadFile(e: Event) {
+  if (msgInput.value.length > 1000) {
+    alert('Куда столько символов')
+     return
+  }
   const input = e.target as HTMLInputElement;
   if (input.files && input.files[0]) {
     file.value = input.files[0];
@@ -73,6 +81,10 @@ const sendMessage = (msg : any) => {
 }
 
 const  handleSendMessage = async ()=> {
+  if (msgInput.value.length > 1000) {
+    alert('Куда столько символов')
+     return
+  }
   if (!msgInput.value || !msgInput.value.trim() ) return
   const me = await getMe()
 
