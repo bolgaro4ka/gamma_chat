@@ -13,7 +13,7 @@ async function bootstrap() {
   // Настраиваем middleware csurf
   
   
-  await app.listen(3000);
+  await app.listen(8004);
 
 
 }
