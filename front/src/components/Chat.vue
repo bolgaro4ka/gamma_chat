@@ -210,47 +210,56 @@ socket.on('recMessageWithFile', (msgu) => {
 </template>
 
 <style scoped lang="scss">
-.chat__wrapper {
-    min-height: 100dvh;
-    overflow-x: hidden;
-    overflow-y: hidden;
-}
-.chat__container {
-    height: calc(100dvh - 70px);
-    overflow-y: auto;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    padding: 10px;
-}
-
-.chat {
-    margin: 0 auto;
-    width: 100%;
-    
-   
-    padding: 5px;
-   
-
-}
-
 .contextMenu {
     position: absolute;
-    height: 400px;
-    background-color: transparent;
-    backdrop-filter: blur(10px);
+    min-width: 260px;
+    min-height: 220px;
+    max-width: 320px;
+    background: rgba(34, 40, 49, 0.85);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+    backdrop-filter: blur(16px) saturate(1.2);
     display: flex;
     z-index: 1000;
     flex-direction: column;
-    padding: 10px;
+    padding: 18px 20px 16px 20px;
+    border: 1.5px solid rgba(255,255,255,0.08);
+    animation: fadeInMenu 0.3s;
 
     img {
-        width: 100px;
-        height: 100px;
-        border-radius: 2000px;
-        margin-right: 10px;
-
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin-right: 0;
         object-fit: cover;
+        border: 2px solid #6a82fb;
+        box-shadow: 0 2px 8px rgba(106,130,251,0.12);
+    }
+
+    &__head {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 10px;
+        .id {
+            font-size: 1.2rem;
+            margin-left: 10px;
+            color: #bfc9d1;
+            font-weight: 600;
+        }
+        p {
+            color: #6a82fb;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+        }
+    }
+
+    p {
+        color: #fff;
+        font-size: 1rem;
+        margin: 2px 0 2px 0;
+        word-break: break-all;
     }
 
     &__item {
@@ -260,32 +269,41 @@ socket.on('recMessageWithFile', (msgu) => {
         justify-content: center;
         align-items: center;
         border-bottom: var(--color-text) 1px solid;
+        border-radius: 8px;
+        transition: background 0.2s;
     }
-
-    &__head {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-
-        .id {
-            font-size: 40px;
-            margin-left: 10px;
-        }
-
-        p {
-            color: #7dce7e;
-            font-weight: bolder;
-        }
-    }
-
     &__item:hover {
-        background-color: #2e73a3;
+        background: linear-gradient(90deg, #6a82fb 0%, #fc5c7d 100%);
+        color: #fff;
     }
+}
+
+@keyframes fadeInMenu {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .messages {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 14px;
+}
+
+.chat__container {
+    height: calc(100dvh - 70px);
+    overflow-y: auto;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    padding: 18px 10px 90px 10px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.10);
+}
+
+.chat__wrapper {
+    min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    // background: linear-gradient(135deg, #232526 0%, #414345 100%);
 }
 </style>
