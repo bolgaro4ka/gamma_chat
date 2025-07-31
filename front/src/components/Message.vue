@@ -48,7 +48,7 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
 @media screen and (max-width: 800px) {
 
     .message {
-        width: 90%;
+        width: fit-content;
 
         * {
             font-size: 12px;
@@ -95,7 +95,7 @@ const isValidImg = ref(props.src.includes('undefined') ? false : true)
         }
 
         .message-body {
-            width: 500px;
+            width: fit-content;
             height: auto;
             display: flex;
             align-items: center;

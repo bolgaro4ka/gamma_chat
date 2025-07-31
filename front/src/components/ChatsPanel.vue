@@ -77,20 +77,20 @@ if (localStorage.getItem('needReload') === 'true') {
         <svg xmlns="http://www.w3.org/2000/svg" v-if="isMobilePanelOpen" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" height="24px"  v-else viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
     </div>
-    <div class="chatsPanel-glass-bg" />
+    <div class="chatsPanel-glass-bg"></div>
     <div class="chatsPanel" v-if="isMobilePanelOpen">
         <div class="chatsPanel__wrapper">
             <div class="chatsPanel__content">
                 <div class="chatsPanel__userContent">
-                    <div class="chatsPanel__avatar"><img :src="me?.avatar ? host+me?.avatar?.replace('.', '') : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'"/></div>
+                    <div class="chatsPanel__avatar" v-if="user.id"><img :src="me?.avatar ? host+me?.avatar?.replace('.', '') : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'"/></div>
                     <div class="chatsPanel__userInfo">
-                        <div class="chatsPanel__user"><p>{{ user.username ? user.username : 'Не авторизирован' }}</p></div>
+                        <div class="chatsPanel__user"><p>{{ user.username ? user.username : 'Gamma Chat' }}</p></div>
                         
                         <div class="chatsPanel__id"><p>{{ user.id ? user.id : '' }}</p></div>
                     </div>
                 </div>
                 <div class="chatsPanel__btns">
-                    <button class="chatsPanel__edit" @click="isUserEditOpen = true"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>
+                    <button v-if="user.id" class="chatsPanel__edit" @click="isUserEditOpen = true"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg></button>
                     <button @click="() => {logout(); reloadPage($router);}" class="chatsPanel__logout"><svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg></button>
                 </div>
                 <div class="chatsPanel__indicatorContent">
@@ -194,34 +194,7 @@ if (localStorage.getItem('needReload') === 'true') {
   }
 }
 
-@media screen and (max-width: 800px) {
 
-    .chatsPanel {
-        width: 100vw !important;
-        position: fixed;
-        display: block;
-        height: 100vh;
-        overflow-x: hidden;
-        overflow-y: hidden;
-        z-index: 2;
-        backdrop-filter: blur(18px) saturate(1.2);
-        background: rgba(34, 40, 49, 0.65);
-    }
-
-    .chatsPanel__open {
-        display: block !important;
-        position: fixed;
-        top: 20px;
-        right: calc(50vw - 15px);
-        width: 44px;
-        height: 44px;
-        z-index: 3;
-        background-color: rgba(0, 0, 0, 0.5);
-        padding: 10px;
-        border-radius: 2000px;
-    }
-    
-}
 
 .chatsPanel__open {
     display: none;
@@ -433,7 +406,35 @@ if (localStorage.getItem('needReload') === 'true') {
     height: 100%;
 }
 
+@media screen and (max-width: 800px) {
 
+    .chatsPanel {
+        width: 100vw !important;
+        position: fixed;
+        display: block;
+        height: 100vh;
+        overflow-x: hidden;
+        overflow-y: hidden;
+        z-index: 2;
+        border-radius: 0;
+        backdrop-filter: blur(18px) saturate(1.2);
+        background: rgba(34, 40, 49, 0.65);
+    }
+
+    .chatsPanel__open {
+        display: block !important;
+        position: fixed;
+        top: 20px;
+        right: calc(50vw - 15px);
+        width: 44px;
+        height: 44px;
+        z-index: 3;
+        background-color: rgba(0, 0, 0, 0.5);
+        padding: 10px;
+        border-radius: 2000px;
+    }
+    
+}
 
 
 </style>

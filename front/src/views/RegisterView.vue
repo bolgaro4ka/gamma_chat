@@ -42,7 +42,7 @@ function login(e : Event) {
         first_name: name.value.split(' ')[0],
         last_name: name.value.split(' ')[1]
     }).then((response) => {
-        if (response.data.response.message === "User with this email found") {
+        if (response?.data?.response?.message === "User with this email found") {
             error.value = 'Пользователь с таким email уже зарегистрирован';
             return
         }

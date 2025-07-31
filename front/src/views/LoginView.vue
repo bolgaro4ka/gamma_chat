@@ -31,7 +31,7 @@ function login(e : Event) {
         email: email.value,
         password: password.value
     }).then((response) => {
-        if (response.status !== 200) {
+        if (response.status !== 200 && response.status !== 201) {
             error.value = 'Неверные данные'
             return
         }

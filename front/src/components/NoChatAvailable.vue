@@ -14,7 +14,7 @@ const props = defineProps(['reason'])
 <style scoped lang="scss">
     .noChatAvailable {
         width: 100%;
-        height: 100%;
+        height: 200px;
         background-color: #2a3038;
         color: white;
         display: flex;
